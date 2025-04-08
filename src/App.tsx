@@ -1,35 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import ArticleForm from "./components/ArticleForm";
+import ArticleList from "./components/ArticleList";
+import { Article } from "./types";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [articles, setArticles] = useState<Article[]>([]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("articles");
+    if (stored) {
+      setArticles(JSON.parse(stored));
+    }
+  }, []);
+
+  const addArticle = (article: Article) => {
+    const updated = [article, ...articles];
+    setArticles(updated);
+    localStorage.setItem("articles", JSON.stringify(updated));
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Mon Blog</h1>
+      <ArticleForm onAdd={addArticle} />
+      <ArticleList articles={articles} />
+    </div>
+  );
 }
 
-export default App
+export default App;
